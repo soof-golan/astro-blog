@@ -1,0 +1,158 @@
+---
+author: Soof Golan
+datetime: 2022-11-11T12:15:00+02:00
+title: A Tale of Scaling a Registration System
+slug: "registration-system-quest"
+featured: true
+draft: false
+tags:
+  - backend
+  - frontend
+  - gcp
+  - burn
+ogImage: /assets/blog/registration-system-quest/cover.avif
+description: A story about creating and scaling a registration system
+  to serve 3000+ people for a two local Burn events in Israel
+  within less than 48 hours.
+---
+
+![system top level architecture](/assets/blog/registration-system-quest/cover.avif)
+
+_Note: originally posted in Hebrew on [facebook][fb-post]_
+
+## Table of Contents
+
+# Tales of the Registration System
+
+## Introduction
+
+I, too, struggled with the registration of Burnerot Yerucham's form last week (Nov 2022),
+and after we were all left feeling frustrated and disappointed with the situation,
+I thought to myself: "Maybe I should build a registration system for the event?".
+I went to sleep, and forgot about it and carried on with my life.
+
+## So what happened?
+
+A few days later we were sitting on the balcony at a friend's house, the subject of
+the ticketing situation of Burnerot's Yerucham came up in the conversation, and I had
+the feeling of "Fuck it, this is happening **_right now_**". So I took my laptop out
+(at midnight 😅) and within an hour had a working prototype. As appropriate to my
+mad frontend skillz, it took me more time to center some `div`s than
+building the whole "registration system" backend.
+
+The next day - did some finishing touches, and sent a message to two friends asking
+them to connect me to the event organizers.
+
+_"Yo! I built this cute mini-project last night, it should handle any load that comes…
+If it looks like it can help with the registration tomorrow, talk to me"_.
+
+We talked, did some ping-pong over the contents and fields of the page, and… voilà,
+suddenly there's a functioning and live registration system.
+
+## Wednesday
+
+Up until now, I didn't suspect a thing, and then I got a message:
+
+_"Say, do you think you can also help with the sale of Park Yarden today?"_
+
+We're going for it!
+
+17:00 - I duplicate the project, upload a first version of Park Yarden to the air
+
+\* Tweaking, talking, tweaking, talking \*
+
+[We changed some content and the captcha, detailed explanation [here](#what-happened-with-the-captcha)
+on why some people saw an old version of the image]
+
+\* Tweaking, talking, tweaking, talking \*
+
+20:00 - The registration starts
+
+Confused burners arrive to the shiny webpage, but there aren't a lot of registrations.
+
+\* First post about captcha problem \*
+
+("Hmm... Looks like I know what the problem is, I'll push a fix real quick")
+
+The fix is now live, people register, and form closed at 20:30
+
+After analyzing the situation, the organizers drew conclusions and decided that due to the Captcha
+issue, another registration round will be made in order to give everyone a fair chance.
+
+The Meme Department receives new material, everyone is considered a robot, exposed as a Cylon, the operation succeeded but the patient died.
+
+(Memes Department, love you guys ❤️)
+
+## And there was evening, and there was morning—the fifth day (aka Thursday)
+
+There are 2 sales, Park Yarden at 19:00, Park Yerucham at 20, this time everything
+is up running from the get go, and everyone is relaxed.
+
+19:00 - Park Yarden - The registration begins
+
+We're seeing reports of DNS issues for a (presumably) small part of the people
+
+Me: "Damn, 🤦‍♀️, it's always DNS"
+(Sorry Roy, hope to see you in Park Yerucham)
+
+![It's always DNS](/assets/blog/registration-system-quest/its-always-dns.png "It's always DNS")
+
+20:00 Yerucham registration - everything is flowing
+
+20:01 The Memes Department is in a moment of silence
+
+20:13 ~name redacted~ marked safe from _Burnerot Sale_
+
+It was fun raising this whole system, and I hope you weren't too
+disappointed that it didn't crash completely 😉
+
+# Under The Hood - Technical Details
+
+## What happened with the captcha??
+
+So, cloudflare has an awesome system in general, but part of how
+they stand the load of thousands of people pounding on the same website
+at the same time, is by memorizing (caching) which content to serve on the site.
+
+For example, instead of looking up which image is stored behind the url
+`https://example.com/some-image.png`, we can assume this file does not
+change over short periods of time, and keep a copy in memory to serve instead
+of loading it from disk every time. This approach failes when the content
+changes on disk, and the cache is not invalidated.
+
+At 7:30 pm on Wednesday, I updated the image, and uploaded an updated version of
+the Park Yarden form, the name of the infamous file was `fake_captcha.png`
+(this real captcha system, but an improvisation that was done less
+than a day before the sale)
+
+I have changed content of the image and not the filename,
+As consequence, some people received an older version of the
+file with this name.
+
+(By the way, this is a totally cloudflare bug that it's even possible that this happens, and I intend to open a complaint against them to fix this)
+The fix was to change the filename to something like `fake_captcha1.png`
+
+## How did the "registration system" band look like?
+
+I used Google Cloud Functions, the setup was quick and easy,
+and the actual usage was within the free tier.
+
+The important part here is: Google's logging system support
+enormous amounts of data, we didn't even scratch the limits of this system.
+
+My "smart" function included less than 30 lines of code,
+it recorded at what exact time the registration was made,
+and in the end I just called to `print`, that's it.
+
+These prints are stored in Google's logs, and after closing the form
+I exported the contents to a spreadsheet, and transferred the data
+to the organizers and told them to sort the content by the time signature
+of the entries, and my work here is done.
+
+---
+
+I hope you enjoyed this story
+
+it was fun registering y'all 💜💜
+
+[fb-post]: https://www.facebook.com/groups/1861469237419220/posts/3432440380322090/
