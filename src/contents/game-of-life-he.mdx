@@ -1,0 +1,144 @@
+---
+author: Soof Golan
+datetime: 2022-02-03T21:29:25.315Z
+title: משחק החיים + מצלמת רשת + שיידרטוי
+slug: game-of-life-heb
+featured: false
+draft: false
+tags:
+  - computer-vision
+  - art
+  - game-of-life
+ogImage: "/assets/blog/game-of-life/cover.png"
+description: Game of Life powered by a webcam + some image processing code to create an interactive experience
+---
+
+import { Rtl } from "@components/Rtl.tsx";
+
+[English](/blog/game-of-life-en)
+[עברית](/blog/game-of-life-he)
+
+![Game of Life](/assets/blog/game-of-life/cover.png)
+
+## [👾 Try it Live! 👾](https://www.shadertoy.com/view/NtdSRM)
+
+## Table of contents
+
+## <Rtl>מיצבים לברנים 🔥</Rtl>
+
+<Rtl>
+  באופן כללי, לי (ולנתי) יש בקלוג אינסופי של רעיונות למיצבים אז חשבנו לשם שינוי
+  ללכת על משהו קל להשגה: להריץ את משחק החיים של קונווי ([Conway's Game of
+  Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life)) .
+</Rtl>
+
+## <Rtl>משחק החיים - החוקים</Rtl>
+
+<Rtl>
+משחק החיים הוא משחק עם מעט מאוד חוקים, ולכן קל לממש את הליבה שלו:
+
+- 🏨 כל משבצת מוקפת ב-8 משבצות, לכן לכל תא יכולים להיות עד 8 שכנים.
+- ⬜⬅⬛ אם התא חי, ויש לו שכן אחד או שאין לו שכנים כלל, הוא מת מבדידות.
+- ⬜⬅⬛ אם יש לתא יותר משלושה שכנים, הוא מת מצפיפות.
+- ⬛⬅⬜ אם התא מת, ויש לו בדיוק שלושה שכנים, הוא הופך להיות חי ("נולד").
+- ⬜⬅⬜ אחרת (שני שכנים, או שלושה שכנים והתא חי) מצבו לא משתנה.
+
+המימוש הקלאסי הוא עם קונבולוציה עם גרעין (kernel) בגודל 3X3:
+
+</Rtl>
+
+```python
+[[1, 1, 1],
+ [1, 0, 1],
+ [1, 1, 1]]
+```
+
+<Rtl>
+
+קונבולוציה עם הקרנל סוכמת את השכנים, ואז נותר רק לממש את החוקים של לידה והשרדות, המוות זו ברירת המחדל של כל שאר התאים.
+אני ממש אהבתי את פשטות המימוש של [ArrayFire](https://github.com/arrayfire/arrayfire#conways-game-of-life-using-arrayfire).
+
+</Rtl>
+
+### <Rtl>אינטראקטיביות</Rtl>
+
+<Rtl>
+ואז, כמובן שהתחלנו למרכב את הרעיון, רצינו אינטרקאטיביות, והתחלנו לחשוב על ממשק
+עם ג'ויסטיק וכפתורים, וניסינו להבין איך בכלל פורסים כזה משחק בשטח.
+הגדרנו stretch goal - אם סיימנו עם הכפתורים, עושים אינטגרציה למצלמה.
+ישבנו כמה שעות לתכנת
+ולא הצלחנו להתקדם לשום מקום משמעותי
+השעה הייתה 1 בלילה והיינו קצת אבודים...
+
+</Rtl>
+
+## <Rtl>יותר מזל משכל</Rtl>
+
+<Rtl>
+ברגע של מזל מוחלט, נזכרתי בכלי מגניב שנקרא [Shadertoy](https://www.shadertoy.com/).
+באתר שלהם ניתן ליצור _שיידרים_ (עוד פרטים בהמשך) עם סביבת פיתוח מינימלית, ואינטגרציה עם כל קלט שתרצו: מצלמה, מיקרופון, שעון ועוד.
+היינו כל כך תקועים עם המימוש שלנו, שפשוט אמרנו fuck it, ושברנו את הראש איך כותבים את GLSL.
+
+</Rtl>
+## <Rtl> אז מה לעזאזל זה שיידר ? WTF Is A Shader </Rtl>
+
+<Rtl>
+
+בהפשטה וחסר דיוק משווע, [שיידר דו מימדי](https://en.wikipedia.org/wiki/Shader#Pixel_shaders) זה שם לחתיכת קוד שיודעת לחשב צבע של פיקסל.
+השיידר מקבל כמה אינפוטים, קורדינטות, באפרים, זמן, ועוד כמה דברים, ומחשב את הערך של פיקסל בודד.
+למה זה טוב? כי במקום לכתוב תוכנה שבה אנחנו מחשבים את כל הפיקסלים אחד אחרי השני, אנחנו יכולים לתת למעבד הגרפי שלנו להריץ את השיידר על מלא פיקסלים במקביל.
+כל עוד כתבנו שיידר שפוי, אין חשיבות לאיזה פיקסל מעובד קודם, וזה נותן לנו הרבה חופש, וייתרונות בביצועים של התוכנה שלנו.
+בעיקר, ברגע שמתרגלים לכתוב קוד שנוגע רק בפיקסל בודד כל פעם, אנחנו נותנים לruntime להחליט בשבילנו איך לעשות את השאר נכון.
+
+</Rtl>
+
+"Never bet against the compiler." [-- Someone on the Internet](https://quotes.cs.cornell.edu/quote/1244/)
+
+## <Rtl>איך מחברים תמונה למשחק החיים</Rtl>
+
+<Rtl>
+
+אמ;לק - אלגוריתם סף (Threshold) - הופכים את התמונה לבינארית.
+אחרי שהיא בינארית, כל פיקסל מהווה תא חי או מת במשחק החיים
+
+![image thresholding](https://scikit-image.org/docs/dev/_images/sphx_glr_plot_threshold_li_001.png)
+
+</Rtl>
+
+```python
+def threshold(image: np.ndarray, val) -> np.ndarray:
+    return image - val >= 0
+```
+
+<Rtl>
+
+אז כזה, רק בשיידר, וכדי לתפוס קצוות יותר אפשר לעשות עיבוד תמונה נוסף כדי לחדד
+
+</Rtl>
+
+```python
+def gaussian_kernel(kernel_size=21, nsig=3):
+    x = np.linspace(-nsig, nsig, kernel_size+1)
+    kern1d = np.diff(scipy.stats.norm.cdf(x))
+    kern2d = np.outer(kern1d, kern1d)
+    return kern2d/kern2d.sum()
+
+def gaussian_blur(image: np.ndarray, kernel_size) -> np.ndarray:
+    kernel = gaussian_kernel(kernel_size)
+    return scipy.signal.convolve2d(image, kernel, 'same')
+
+def sharpen(image: np.ndarray, kernel_size) -> np.ndarray:
+    return image - gaussian_blur(image) >= 0
+```
+
+## <Rtl>נו, אז מה נסגר עם זה?</Rtl>
+
+<Rtl>
+נכון, נכון, היה כאן איפשהו מיצב, לקח לנו בערך שעה לכתוב הכל, shadertoy עשו אינטגרציה מדהימה והכל עבד בלי חיכוך.
+בשטח לקחנו את blink64 (מחשב השטח שלי, שאולי יקבל כאן פוסט מתישהו), חיברנו למקרן ומצלמת רשת, והמיצב רץ במשך יומיים באמצע המדבר.
+
+היה מגניב ממש, אנשים נהנו, ואנחנו קצת פישלנו ולא צילמנו **כלום** בשטח
+
+</Rtl>
+
+¯\_(ツ)\_/¯

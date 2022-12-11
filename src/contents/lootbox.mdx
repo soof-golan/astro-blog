@@ -1,0 +1,72 @@
+---
+author: Soof Golan
+datetime: 2022-01-14T06:35:07.322Z
+title: 🍫🎮 LootBox - An Arcade that Serves Snacks
+slug: ""
+featured: false
+draft: false
+tags:
+  - art
+ogImage: ""
+description: Video-game powered vending machine in the middle of the desert
+---
+
+_Note: this post was partly translated from Hebrew to English by GPT-3 + some manual fixes_
+
+### Table of Contents
+
+## An Arcade that Serves Snacks
+
+As luck would have it, an idea came up to build and set up an arcade connected
+to a snack vending machine in the middle of the desert, at an event called MidBurn.
+The vision was simple - take two solved problems and create an even bigger problem,
+maybe we'll find a solution ¯\_(ツ)\_/¯.
+
+We set off, Nati and I decided on a budget, made a gent request and went off
+to the closest online store that would take our money and got a refrigerator delivered
+to our doorstep.
+
+## The Design
+
+We took out all the glass shelves and placed coiles driven by DC motors to drive
+the snacks down to the players. We placed a computer in the back, connected it to
+a Monitor and and game controllers and we were "ready to go" (This process took
+place over several months to complete).
+
+## ⌨️ The Code
+
+We developed the games by ourselves in Vanilla JavaScript + HTML5 Canvas
+(Never doing that agaig), without any intent to make this code maintainable,
+we just needed for it to work once, for better or worse 🍝 here's what came
+out of it [here](https://github.com/NatanelMizrahi/LootBox). It's not the
+code we wanted it to be, but it's the code we deserve. Nonetheless, it worked
+in "Production", so why not have fun 🎉🎉🎉.
+
+## Integration with the Vending Machine
+
+In addition to the games themselves, there was a small Arduino, which was
+responsible for managing the engines. The code for it is also in the same repository.
+The protocol was very bare-bones, the computer sent which engine and
+for how long to activate. The communication with the Arduino was done
+serial over via USB.
+
+This is the _'protocol'_:
+
+```
++---------------+-------------------------+------+
+| Motor Indices | Duration (milliseconds) | '\n' |
++---------------+-------------------------+------+
+```
+
+## The Event
+
+(GitHub Copilot wrote this part, i thought it was funny, and not at all accurate)
+
+We set it up at the event, and it worked like a charm. We had a lot
+of fun and the players had a lot of fun too.
+
+(This is what actually happened)
+
+We set it up at the event, and it mostly worked. Some of the participants
+vandalized the machine, and we had to fix it on the spot.
+Apart from that, it was a lot of fun and the players had a lot of fun too.

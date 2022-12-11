@@ -1,0 +1,145 @@
+---
+author: Soof Golan
+datetime: 2022-02-03T21:29:25.315Z
+title: Game of Life + Webcam + Shadertoy
+slug: game-of-life-en
+featured: false
+draft: false
+tags:
+  - computer-vision
+  - art
+  - game-of-life
+ogImage: ""
+description: Game of Life powered by a webcam + some image processing code to create an interactive experience
+---
+
+![Game of Life](/assets/blog/game-of-life/cover.png)
+
+_this post was translated from the [Original Hebrew Version](https://soofgolan.com/blog/game-of-life) with OpenAI's GPT-3 Model, I have correted some but probably not all mistakes_
+
+[English](/blog/game-of-life-en)
+[עברית](/blog/game-of-life-he)
+
+## Table of contents
+
+## Try it Live!
+
+[👾 Right Here 👾](https://www.shadertoy.com/view/NtdSRM)
+
+## Art installations at Burns 🔥
+
+Generally, me (and Nati) have an infinite backlog of ideas for art installations,
+so we thought to make a change to go for something easy to achieve:
+running Conway's Game of Life.
+
+## Game of Life - The Rules
+
+The Game of Life is a game with very few rules, and thus it is easy to implement the logic:
+
+The game is played on a grid of cells, where each cell can be either alive or dead.
+
+- 🏨 On the grid, each cell is surrounded by 8 cells call "neighbors".
+- ⬜ ➡️ ⬛ If the cell is alive and has one neighbor or no neighbors at all, it dies of loneliness.
+- ⬜ ➡️ ⬛ If the cell has more than three neighbors, it dies of overcrowding.
+- ⬛ ➡️ ⬜ If the cell is dead and has exactly three neighbors, it turns alive ("birth").
+- ⬜ ➡️ ⬜ Otherwise (two neighbors, or three neighbors and the cell is alive) its state remains unchanged.
+
+The classic implementation of counting the neighbours is with a 3x3 convolution kernel:
+
+```python
+[[1, 1, 1],
+ [1, 0, 1],
+ [1, 1, 1]]
+```
+
+The convolution counts the amount of neighbors for each cell, and then we need to implement
+the rules of birth and survival, death being the default of all other cells.
+I really liked the simplicity of the
+[ArrayFire](https://github.com/arrayfire/arrayfire#conways-game-of-life-using-arrayfire) implementation.
+
+### Interactivity
+
+And then, of course, we started to add complexity as we shape the idea,
+we wanted interactivity, and started to think about a user interface using
+a controller / buttons, and tried to understand how would people play such a game
+in the field. We set a stretch goal - if we finish with the buttons, we do integration
+with the camera. We sat down for a few hours to program and didn't manage
+to get anywhere meaningful. We found ourselves feeling a bit lost at 1AM getting nowhere.
+
+## More Luck Than Brains
+
+Randomly as we're hacking about, I recalled a cool tool called
+[Shadertoy](https://www.shadertoy.com/). On their platform you can create
+_shaders_ (more details later) with minimal development environment, and they have seemless
+integrations with any kind input you'd want: cameras, microphones, clocks and more.
+We were so stuck with our implementation, that we just said _'fuck it'_,
+and bashed our heads to quickly learn on how to use GLSL.
+
+## So... wtf is a shader?
+
+In a [brief, incomplete and mostly wrong](biamw) description, a [two-dimensional shader](https://en.wikipedia.org/wiki/Shader#Pixel_shaders)
+is a program calculates the color of a single pixel.
+The shader receives inputs: (coordinates, buffers, time, etc.)
+and calculates the value of the single pixel.
+Why is this good? Because instead of writing code that calculates
+all the pixels one by one, we can give our GPU the ability to run
+the shader on all of the pixels in parallel. As long as we write the
+shader correctly, it doesn't matter which pixel is processed first,
+and it gives us a lot of freedom, and performance advantages to our
+software.
+
+In short, as soon as we get used to writing code that only
+deals with a single pixel at a time, we give the runtime the ability
+to decide for us how to do the rest correctly.
+
+"Never bet against the compiler." [-- Someone on the Internet](https://quotes.cs.cornell.edu/quote/1244/)
+
+## One Does Not Simply Integrate Images Game of Life
+
+TL;DR - you binarize the image, and then you run the game of life on it.
+
+Images from a webcam come in full color, and the Game of Life is black and white.
+To do that, we used a thersholding algorithm, each pixel in the image is now a living or dead cell.
+
+![image thresholding](https://scikit-image.org/docs/dev/_images/sphx_glr_plot_threshold_li_001.png)
+
+```python
+def threshold(image: np.ndarray, val) -> np.ndarray:
+    return image - val >= 0
+```
+
+Our implementation is the same as the code above, just written as a shader.
+And to have more more "alive" cells, we did additional processing to sharpen the image.
+
+```python
+def gaussian_kernel(kernel_size=21, nsig=3):
+    x = np.linspace(-nsig, nsig, kernel_size+1)
+    kern1d = np.diff(scipy.stats.norm.cdf(x))
+    kern2d = np.outer(kern1d, kern1d)
+    return kern2d/kern2d.sum()
+
+def gaussian_blur(image: np.ndarray, kernel_size) -> np.ndarray:
+    kernel = gaussian_kernel(kernel_size)
+    return scipy.signal.convolve2d(image, kernel, 'same')
+
+def sharpen(image: np.ndarray, kernel_size) -> np.ndarray:
+    return image - gaussian_blur(image) >= 0
+```
+
+## What ended up with this project?
+
+Right, right, there was some kind of art installation in all this adventure,
+it took us about an hour to write everything, shadertoy's camera
+inegration was amazing and everything worked without a glitch.
+In the field, we used blink64 (my computer doing for hacking around with stuff,
+which might get a post of it's own as some point), connected it to
+a projector and the webcam, and the setup ran for two days in the
+middle of the desert.
+
+It was a lot of fun, people enjoyed it, and we were a bit proud and
+didn't take **any pictures** in the while we were out there 🤦‍♂️
+Better luck next time with remembering that.
+
+¯\_(ツ)\_/¯
+
+[biamw]: http://james-iry.blogspot.com/2009/05/brief-incomplete-and-mostly-wrong.html
