@@ -7,7 +7,7 @@ export const SITE = {
   title: "Soof Golan's Blog",
   ogImage: "og-image.jfif",
   lightAndDarkMode: true,
-  postPerPage: 3,
+  postPerPage: 5,
 };
 
 export const LOGO_IMAGE = {

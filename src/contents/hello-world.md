@@ -1,6 +1,6 @@
 ---
 author: Soof Golan
-datetime: 2022-01-14T05:35:07.322Z
+datetime: 2022-01-14T17:35:07+02:00
 title: Hello, World 👋🌍
 slug: "hello-world"
 featured: false
