@@ -39,123 +39,164 @@ const featuredPosts = sortedPosts.filter(
       </a>
 
       <p>
-        Hi there! I'm Soof, engineer for 10+ years. I care about effective
-        impact, tech and pixels.
+        Hi! I've been hacking and engineering stuff for 10+ years. I care about
+        effective impact, tech and pixels.
       </p>
+
+      <h1>Services</h1>
       <p>
-        I've worked as Tech Lead @ Iron-Drone (acquired by Airobotics), EE @
-        Apple, senior sw engineer @ Wix and more.
+        I'm available for freelance work, some of the service I offer are:
+        <ul>
+          <li>
+            * Working with early stage companies to help them get off the
+            ground, and build a solid foundation for their product
+          </li>
+          <li>
+            * Helping established orgs to help them scale and improve their
+            products and processes
+          </li>
+          <li>
+            * Building software systems to fit specific needs and requirements
+          </li>
+        </ul>
+        <p>
+          Got an exciting project you want me to get on? In need of some
+          assitance with performance bottlenecks, tooling or architecture? Drop
+          me a line at <LinkButton
+            className="hover:text-skin-accent underline underline-offset-4 decoration-dashed"
+            href="mailto:hi@soofgolan.com?subject=Hey Soof!&body=Hey Soof!%0D%0A%0D%0AI'm interested in your services and would like to talk about a project I have in mind."
+          >
+            hi@soofgolan.com
+          </LinkButton>
+        </p>
+        <p>
+          Don't like emails? Book a call with me on <LinkButton
+            className="hover:text-skin-accent underline underline-offset-4 decoration-dashed"
+            href="https://calendly.com/soofgolan/30min"
+          >
+            Calendly.
+          </LinkButton>
+        </p>
+
+        <h2>Experience</h2>
+        <p>Some cherry-picked highlights from my career:</p>
+        <p>
+          <ul>
+            <li>* Tech Lead at Iron-Drone (acquired by Airobotics)</li>
+            <li>* Senior SW engineer at Wix</li>
+            <li>* Electrical engineer at Apple</li>
+          </ul>
+        </p>
+        <p>
+          In my free time I enjoy making art installations, playing with
+          technology and mixing these two together.
+        </p>
+        <p>
+          📜 <LinkButton
+            className="hover:text-skin-accent underline underline-offset-4 decoration-dashed"
+            href="https://bit.ly/soof-golan-cv"
+          >
+            Full CV here
+          </LinkButton>
+        </p>
+        <div class="social-wrapper">
+          <div class="social-links">Social Links:</div>
+          <Socials />
+        </div>
       </p>
-      <p>
-        Currently taking freelancing projects, contact me if your org needs help
-        with taking care perfromance problems, computer vision, backend, and
-        other general engineering tasks.
-      </p>
-      <p>
-        In my free time I enjoy making art installations, playing with
-        technology and mixing these two together.
-      </p>
-      <p>
-        Get in touch with me via email, social media, or my
-        <LinkButton
-          className="hover:text-skin-accent underline underline-offset-4 decoration-dashed"
-          href="/about">about</LinkButton
-        > page.
-      </p>
-      <div class="social-wrapper">
-        <div class="social-links">Social Links:</div>
-        <Socials />
-      </div>
+
+      <Hr />
+
+      {
+        featuredPosts.length > 0 && (
+          <>
+            <section id="featured">
+              <h2>Featured</h2>
+              <ul>
+                {featuredPosts.map(({ frontmatter }) => (
+                  <Card
+                    href={`/posts/${slugify(frontmatter)}`}
+                    post={frontmatter}
+                    secHeading={false}
+                  />
+                ))}
+              </ul>
+            </section>
+            <Hr />
+          </>
+        )
+      }
+
+      <section id="recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+          {
+            sortedPosts.map(
+              ({ frontmatter }, index) =>
+                index < 4 && (
+                  <Card
+                    href={`/posts/${slugify(frontmatter)}`}
+                    post={frontmatter}
+                    secHeading={false}
+                  />
+                )
+            )
+          }
+        </ul>
+        <div class="all-posts-btn-wrapper">
+          <LinkButton href="/posts">
+            All Posts
+            <svg xmlns="http://www.w3.org/2000/svg"
+              ><path
+                d="m11.293 17.293 1.414 1.414L19.414 12l-6.707-6.707-1.414 1.414L15.586 11H6v2h9.586z"
+              ></path>
+            </svg>
+          </LinkButton>
+        </div>
+      </section>
     </section>
 
-    <Hr />
-
-    {
-      featuredPosts.length > 0 && (
-        <>
-          <section id="featured">
-            <h2>Featured</h2>
-            <ul>
-              {featuredPosts.map(({ frontmatter }) => (
-                <Card
-                  href={`/posts/${slugify(frontmatter)}`}
-                  post={frontmatter}
-                  secHeading={false}
-                />
-              ))}
-            </ul>
-          </section>
-          <Hr />
-        </>
-      )
-    }
-
-    <section id="recent-posts">
-      <h2>Recent Posts</h2>
-      <ul>
-        {
-          sortedPosts.map(
-            ({ frontmatter }, index) =>
-              index < 4 && (
-                <Card
-                  href={`/posts/${slugify(frontmatter)}`}
-                  post={frontmatter}
-                  secHeading={false}
-                />
-              )
-          )
-        }
-      </ul>
-      <div class="all-posts-btn-wrapper">
-        <LinkButton href="/posts">
-          All Posts
-          <svg xmlns="http://www.w3.org/2000/svg"
-            ><path
-              d="m11.293 17.293 1.414 1.414L19.414 12l-6.707-6.707-1.414 1.414L15.586 11H6v2h9.586z"
-            ></path>
-          </svg>
-        </LinkButton>
-      </div>
-    </section>
+    <Footer />
   </main>
 
-  <Footer />
+  <style>
+    /* ===== Hero Section ===== */
+    #hero {
+      @apply pt-8;
+    }
+    #hero h1 {
+      @apply inline-block font-bold my-4 sm:my-8 text-3xl sm:text-5xl;
+    }
+    #hero h2 {
+      @apply inline-block font-bold my-4 sm:my-8 text-xl sm:text-3xl;
+    }
+    #hero .rss-link {
+      @apply mb-6;
+    }
+    #hero .rss-icon {
+      @apply h-6 w-6 scale-110 sm:scale-125 mb-2 sm:mb-3 fill-skin-accent;
+    }
+    #hero p {
+      @apply my-2;
+    }
+    .social-wrapper {
+      @apply flex flex-col sm:flex-row sm:items-center mt-4 mb-6;
+    }
+    .social-links {
+      @apply whitespace-nowrap mr-2 sm:mb-0 mb-1;
+    }
+
+    /* ===== Featured & Recent Posts Sections ===== */
+    #featured,
+    #recent-posts {
+      @apply pt-12 pb-6;
+    }
+    #featured h2,
+    #recent-posts h2 {
+      @apply font-semibold text-2xl tracking-wide;
+    }
+    .all-posts-btn-wrapper {
+      @apply text-center my-8;
+    }
+  </style>
 </Layout>
-
-<style>
-  /* ===== Hero Section ===== */
-  #hero {
-    @apply pt-8;
-  }
-  #hero h1 {
-    @apply inline-block font-bold my-4 sm:my-8 text-3xl sm:text-5xl;
-  }
-  #hero .rss-link {
-    @apply mb-6;
-  }
-  #hero .rss-icon {
-    @apply h-6 w-6 scale-110 sm:scale-125 mb-2 sm:mb-3 fill-skin-accent;
-  }
-  #hero p {
-    @apply my-2;
-  }
-  .social-wrapper {
-    @apply flex flex-col sm:flex-row sm:items-center mt-4 mb-6;
-  }
-  .social-links {
-    @apply whitespace-nowrap mr-2 sm:mb-0 mb-1;
-  }
-
-  /* ===== Featured & Recent Posts Sections ===== */
-  #featured,
-  #recent-posts {
-    @apply pt-12 pb-6;
-  }
-  #featured h2,
-  #recent-posts h2 {
-    @apply font-semibold text-2xl tracking-wide;
-  }
-  .all-posts-btn-wrapper {
-    @apply text-center my-8;
-  }
-</style>
