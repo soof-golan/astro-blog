@@ -31,6 +31,12 @@ export const SOCIALS: SocialObjects = [
     active: true,
   },
   {
+    name: "YouTube",
+    href: "https://www.youtube.com/@soofgolan",
+    linkTitle: `${SITE.author} on YouTube`,
+    active: true,
+  },
+  {
     name: "LinkedIn",
     href: "https://linkedin.com/in/soofgolan",
     linkTitle: `${SITE.author} on LinkedIn`,
