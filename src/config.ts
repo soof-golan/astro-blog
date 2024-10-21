@@ -43,12 +43,6 @@ export const SOCIALS: SocialObjects = [
     active: true,
   },
   {
-    name: "Calendly",
-    href: "https://calendly.com/soofgolan/30min",
-    linkTitle: `${SITE.author} on Calendly`,
-    active: true,
-  },
-  {
     name: "Facebook",
     href: "https://facebook.com/soofgo",
     linkTitle: `${SITE.author} on Facebook`,
