@@ -1,20 +1,20 @@
 ---
-import Layout from "@layouts/Layout.astro";
-import Header from "@components/Header.astro";
-import Footer from "@components/Footer.astro";
-import LinkButton from "@components/LinkButton.astro";
-import Hr from "@components/Hr.astro";
 import Card from "@components/Card";
+import Footer from "@components/Footer.astro";
+import Header from "@components/Header.astro";
+import Hr from "@components/Hr.astro";
+import LinkButton from "@components/LinkButton.astro";
+import Socials from "@components/Socials.astro";
 import Videos from "@components/Videos.astro";
+import Layout from "@layouts/Layout.astro";
+import { getAllPosts } from "@utils/getAllPosts.astro";
 import getSortedPosts from "@utils/getSortedPosts";
 import slugify from "@utils/slugify";
-import Socials from "@components/Socials.astro";
-import { getAllPosts } from "@utils/getAllPosts.astro";
 
 const posts = await getAllPosts();
 const sortedPosts = getSortedPosts(posts);
 const featuredPosts = sortedPosts.filter(
-  ({ frontmatter }) => frontmatter.featured
+	({ frontmatter }) => frontmatter.featured,
 );
 ---
 

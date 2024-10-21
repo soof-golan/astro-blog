@@ -1,9 +1,9 @@
 ---
-import { SITE } from "src/config";
 import Posts from "@layouts/Posts.astro";
-import getSortedPosts from "@utils/getSortedPosts";
-import getPageNumbers from "@utils/getPageNumbers";
 import { getAllPosts } from "@utils/getAllPosts.astro";
+import getPageNumbers from "@utils/getPageNumbers";
+import getSortedPosts from "@utils/getSortedPosts";
+import { SITE } from "src/config";
 
 const posts = await getAllPosts();
 
